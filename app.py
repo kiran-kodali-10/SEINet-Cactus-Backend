@@ -1,11 +1,14 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 from sklearn.cluster import KMeans
 import cv2
 from collections import Counter
+import os
 
 app = Flask(__name__)
 
 app.name = "seinet-cactus-backend"
+
+app.config['UPLOAD_FOLDER'] = 'uploads'
 
 @app.route('/api/uploadImage', methods=['POST'])
 def get_subscribed_data():
@@ -15,7 +18,11 @@ def get_subscribed_data():
     image = request.files['image']
 
     print(image)
-    codes = get_colors(get_image(image), 7)
+    image.save(os.path.join(app.config['UPLOAD_FOLDER'], image.filename))
+
+    print(":::::::::::::::::::::::::::")
+    print(send_from_directory(app.config['UPLOAD_FOLDER'], image.filename))
+    codes = get_colors(get_image(image.filename), 10)
 
     return jsonify(codes)
 
@@ -23,7 +30,7 @@ def RGB2HEX(color):
     return "#{:02x}{:02x}{:02x}".format(int(color[0]), int(color[1]), int(color[2]))
 
 def get_image(image_path):
-    image = cv2.imread(image_path)
+    image = cv2.imread("./uploads/"+image_path)
     image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
     return image
 
@@ -40,7 +47,9 @@ def get_colors(image, number_of_colors):
     counts = dict(sorted(counts.items()))
 
     center_colors = clf.cluster_centers_
+    print("center_colors"+str(center_colors))
     ordered_colors = [center_colors[i] for i in counts.keys()]
+    print(ordered_colors)
     hex_colors = [RGB2HEX(ordered_colors[i]) for i in counts.keys()]
 
     return hex_colors
