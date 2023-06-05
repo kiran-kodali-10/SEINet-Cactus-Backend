@@ -3,8 +3,10 @@ from sklearn.cluster import KMeans
 import cv2
 from collections import Counter
 import os
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
 
 app.name = "seinet-cactus-backend"
 
