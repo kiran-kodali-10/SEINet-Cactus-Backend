@@ -12,7 +12,7 @@ app.name = "seinet-cactus-backend"
 
 app.config['UPLOAD_FOLDER'] = 'uploads'
 
-@app.route('/api/uploadImage', methods=['POST'])
+@app.route('/', methods=['POST'])
 def get_subscribed_data():
     # Process the request data and create a new user
     # ...
